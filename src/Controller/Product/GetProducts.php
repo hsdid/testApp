@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Product;
 
-use App\Repository\PersonRepository;
+use App\Helper\Filter\Product\ProductFilter;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -18,32 +19,33 @@ use Symfony\Component\Routing\Annotation\Route;
 class GetProducts extends AbstractController
 {
     /**
-     * @var ProductRepository
+     * @var ProductFilter
      */
-    private ProductRepository $productRepository;
+    private ProductFilter $productFilter;
 
     /**
      * GetProducts constructor.
-     * @param ProductRepository $productRepository
+     * @param ProductFilter $productFilter
      */
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductFilter $productFilter)
     {
-        $this->productRepository = $productRepository;
+        $this->productFilter = $productFilter;
     }
 
     /**
+     * @param Request $request
      * @return Response
      */
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
-        $products = $this->productRepository->findAll();
+        $sort  = $request->query->get('sort');
+
+        $products = $this->productFilter->getProducts($sort);
 
         return $this->render(
             '/product/index.html.twig',
             [
-                'msg' => '',
-                'products' => $products,
-                'qty' => count($products)
+                'products' => $products
             ]);
     }
 }

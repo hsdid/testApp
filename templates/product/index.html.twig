@@ -30,10 +30,10 @@
     <hr>
     <select class="custom-select custom-select-sm mt-4 mb-4" onchange="location = this.value;">
         <option selected>Products filter</option>
-        <option value="/products">search by name</option>
-        <option value="/products/mostLiked">Most liked</option>
-        <option value="/products">latest</option>
-        <option value="/products/eldest">eldest</option>
+        <option value="/product/?sort=likes">Most liked</option>
+        <option value="/product/?sort=least-likes">least liked</option>
+        <option value="/product">latest</option>
+        <option value="/product/?sort=oldest">oldest</option>
     </select>
     <h2>Products</h2>
     {% if products %}
@@ -44,6 +44,7 @@
                     <th scope="col">name</th>
                     <th scope="col">info</th>
                     <th scope="col">public time</th>
+                    <th scope="col">likes</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,7 +53,12 @@
                     <td scope="row">{{ product.id }} </td>
                     <td>{{ product.name }} </td>
                     <td>{{ product.info }} </td>
-                    <td>{{ product.publicdate|date("Y/m/d") }} </td>
+                    <td>{{ product.publicDate|date("Y/m/d") }} </td>
+                    {% if product.likes %}
+                        <td>{{ product.likes }} </td>
+                    {% else %}
+                        <td>0</td>
+                    {% endif %}
                     <td>
                         <a href="/product/{{ product.id }}/edit" class="btn btn-light">Edit</a>
                         <a href="/product/{{ product.id }}/delete" class="btn btn-danger">Delete</a>

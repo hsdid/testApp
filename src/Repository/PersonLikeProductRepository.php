@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
-use App\Entity\Person;
 use App\Entity\PersonLikeProduct;
-use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -31,6 +31,15 @@ class PersonLikeProductRepository extends ServiceEntityRepository
     public function save(PersonLikeProduct $personLikeProduct)
     {
         $this->_em->persist($personLikeProduct);
+        $this->_em->flush();
+    }
+
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function update()
+    {
         $this->_em->flush();
     }
 

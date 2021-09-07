@@ -18,20 +18,20 @@
             {{ message }}
         </div>
     {% endfor %}
-    <h2>likes</h2>
+    <h2>Edit like</h2>
 
-    <form action="/personLikeProduct/add" method="post">
+    <form action="/person/{{ like.getPerson.id }}/product/{{ like.getProduct.id }}/like/edit" method="post">
         <div class="mb-3">
-            <label for="login" class="form-label">prson</label>
-            <input type="text" class="form-control" id="person" name="login" data-person required>
-            <input type="hidden" class="form-control" id="personId" name="personId" data-personId required>
+            <label for="login" class="form-label">person</label>
+            <input type="text" class="form-control" id="person" name="login" data-person required value="{{ like.getPerson.login }}">
+            <input type="hidden" class="form-control" id="personId" name="personId" data-personId required value="{{ like.getPerson.id }}">
         </div>
         <div class="mb-3">
             <label for="last name" class="form-label">product</label>
-            <input type="text" class="form-control" id="product" name="name" data-product required>
-            <input type="hidden" class="form-control" id="productId" name="productId" data-productId required>
+            <input type="text" class="form-control" id="product" name="name" data-product required value="{{ like.getProduct.name }}">
+            <input type="hidden" class="form-control" id="productId" name="productId" data-productId required  value="{{ like.getProduct.id }}">
         </div>
-        <button type="submit" class="btn btn-primary">Like</button>
+        <button type="submit" class="btn btn-primary">Edit</button>
     </form>
 
     <hr>
@@ -93,8 +93,6 @@
     </div>
 
     <script src="/js/like.js"> </script>
-
 {% endblock %}
-
 
 

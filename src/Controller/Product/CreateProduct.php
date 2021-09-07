@@ -8,6 +8,7 @@ use App\Entity\Product;
 use App\Form\FormErrors;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use DateTime;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
@@ -55,7 +56,7 @@ class CreateProduct extends AbstractController
     public function __invoke(Request $request): Response
     {
         $data = $request->request->all();
-        $data['publicDate'] = new \DateTime($data['publicDate']);
+        $data['publicDate'] = new DateTime($data['publicDate']);
 
         $product = new Product();
 
@@ -66,9 +67,10 @@ class CreateProduct extends AbstractController
 
             try {
                 $this->productRepository->save($product);
-            } catch (OptimisticLockException | ORMException $e) {
-                $this->addFlash('error', 'Cant Create product');
 
+            } catch (OptimisticLockException | ORMException $e) {
+
+                $this->addFlash('error', 'Cant Create product');
                 return $this->redirectToRoute('get_products_list');
             }
 
@@ -78,7 +80,6 @@ class CreateProduct extends AbstractController
         }
 
         $errors = $this->formErrors->getErrors($form);
-
         $this->addFlash('error', $errors);
 
         return $this->redirectToRoute('get_products_list');

@@ -39,7 +39,8 @@ class EditPerson extends AbstractController
     public function __construct(
         PersonRepository $personRepository,
         FormErrors $formErrors
-    ) {
+    )
+    {
         $this->personRepository = $personRepository;
         $this->formErrors = $formErrors;
     }
@@ -68,8 +69,9 @@ class EditPerson extends AbstractController
             if ($form->isValid()) {
                 try {
                     $this->personRepository->update();
+
                 } catch (OptimisticLockException | ORMException $e) {
-                    $this->addFlash('error', 'Person cannot be edited');
+                    $this->addFlash('error', 'Something went wrong');
 
                     return $this->redirectToRoute('edit_person');
                 }
@@ -80,7 +82,6 @@ class EditPerson extends AbstractController
             }
 
             $error = $this->formErrors->getErrors($form);
-
             $this->addFlash('error', $error);
 
             return $this->redirectToRoute('edit_person');

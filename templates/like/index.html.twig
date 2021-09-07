@@ -33,7 +33,7 @@
                     <td>{{ like.getPerson.login }} </td>
                     <td>{{ like.getProduct.name }} </td>
                     <td>
-{#                        <a href="/person/{{ person.id }}/edit" class="btn btn-light">Edit</a>#}
+                        <a href="/person/{{ like.getPerson.id }}/product/{{ like.getProduct.id }}/like/edit" class="btn btn-light">Edit</a>
                         <a href="/person/{{ like.getPerson.id }}/product/{{ like.getProduct.id }}/like/delete" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>

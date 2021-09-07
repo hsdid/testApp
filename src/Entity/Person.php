@@ -57,7 +57,6 @@ class Person
     private int $state;
 
     /**
-     * all liked products
      * @ORM\OneToMany(targetEntity="App\Entity\PersonLikeProduct", mappedBy="person")
      */
     private $likedProducts;

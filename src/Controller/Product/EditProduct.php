@@ -7,8 +7,10 @@ namespace App\Controller\Product;
 use App\Form\FormErrors;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use DateTime;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,7 +50,7 @@ class EditProduct extends AbstractController
      * @param Request $request
      * @param int $id
      * @return Response
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(Request $request, int $id): Response
     {
@@ -62,7 +64,7 @@ class EditProduct extends AbstractController
         if ($request->isMethod('POST')) {
 
             $data = $request->request->all();
-            $data['publicDate'] = new \DateTime($data['publicDate']);
+            $data['publicDate'] = new DateTime($data['publicDate']);
 
             $form = $this->createForm(ProductType::class, $product);
             $form->submit($data);
@@ -73,15 +75,16 @@ class EditProduct extends AbstractController
 
                 } catch (OptimisticLockException | ORMException $e) {
 
-                    return $this->json(['error' => 'Product cannot be edited']);
+                    $this->addFlash('error','Something went wrong');
+                    return $this->redirectToRoute('get_products_list');
                 }
+
                 $this->addFlash('success', 'Product edited successfully');
 
                 return $this->redirectToRoute('get_products_list');
             }
 
             $error = $this->formErrors->getErrors($form);
-
             $this->addFlash('error', $error);
 
             return $this->redirectToRoute('edit_product');

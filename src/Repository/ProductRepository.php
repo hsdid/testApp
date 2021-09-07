@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
-use App\Entity\Person;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -50,5 +51,31 @@ class ProductRepository extends ServiceEntityRepository
     public function update()
     {
         $this->_em->flush();
+    }
+
+    /**
+     * @param string $order
+     * @return int|mixed|string
+     */
+    public function sortByLikes(string $order)
+    {
+        return  $this->createQueryBuilder('p')
+            ->select('p.id, p.name, p.info, p.publicDate, count(l.person) as likes')
+            ->leftJoin('p.likedProducts', 'l')
+            ->groupBy('p.id')
+            ->orderBy('likes', $order)->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $order
+     * @return int|mixed|string
+     */
+    public function sortByDate(string $order)
+    {
+        return  $this->createQueryBuilder('p')
+            ->select('p.id, p.name, p.info, p.publicDate, count(l.person) as likes')
+            ->leftJoin('p.likedProducts', 'l')
+            ->groupBy('p.id')
+            ->orderBy('p.publicDate', $order)->getQuery()->getResult();
     }
 }

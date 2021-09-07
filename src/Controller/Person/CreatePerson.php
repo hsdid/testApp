@@ -62,22 +62,21 @@ class CreatePerson extends AbstractController
 
             try {
                 $this->personRepository->save($person);
-            } catch (OptimisticLockException | ORMException $e) {
-                $this->addFlash('error', 'Cant Created Person');
 
+            } catch (OptimisticLockException | ORMException $e) {
+
+                $this->addFlash('error', 'Something went wrong');
                 return $this->redirectToRoute('get_persons_list');
             }
 
-            $this->addFlash('success', 'Person Created Successfully');
+            $this->addFlash('success', 'Person created successfully');
 
             return $this->redirectToRoute('get_persons_list');
         }
 
-        $errors = $this->formErrors->getErrors($form);
+        $error = $this->formErrors->getErrors($form);
 
-        var_dump($errors);
-
-        $this->addFlash('error', 'wrong');
+        $this->addFlash('error', $error);
 
         return $this->redirectToRoute('get_persons_list');
     }

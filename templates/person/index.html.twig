@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Product Model
+    Person Model
 {% endblock %}
 
 {% block body %}
@@ -44,11 +44,13 @@
 
     <hr>
     <select class="custom-select custom-select-sm mt-4 mb-4" onchange="location = this.value;">
-        <option selected>Products filter</option>
-        <option value="/products">search by name</option>
-        <option value="/products/mostLiked">Most liked</option>
-        <option value="/products">latest</option>
-        <option value="/products/eldest">eldest</option>
+        <option selected>Person filters</option>
+        <option value="/person/">Persons from the most likes</option>
+        <option value="/person/?sort=least-likes">Persons from the least likes</option>
+        <option value="/person/?sort=state-active">Persons active</option>
+        <option value="/person/?sort=state-banned">Persons banned</option>
+        <option value="/person/?sort=state-removed">Persons removed</option>
+
     </select>
     <h2>Products</h2>
     {% if persons %}
@@ -71,7 +73,11 @@
                     <td>{{ person.lName }} </td>
                     <td>{{ person.fName }} </td>
                     <td>{{ person.state }} </td>
-                    <td>{{ person.getLikedProducts }} </td>
+                    {% if person.likes %}
+                    <td>{{ person.likes }} </td>
+                    {% else %}
+                        <td>0</td>
+                    {% endif %}
                     <td>
                         <a href="/person/{{ person.id }}/edit" class="btn btn-light">Edit</a>
                         <a href="/person/{{ person.id }}/delete" class="btn btn-danger">Delete</a>

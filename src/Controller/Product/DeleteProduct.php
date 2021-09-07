@@ -34,24 +34,25 @@ class DeleteProduct extends AbstractController
 
     /**
      * @param int $id
+     * @return Response
      */
-    public function __invoke(int $id)
+    public function __invoke(int $id): Response
     {
         $product = $this->productRepository->find($id);
 
         if (!$product) {
-            return $this->json(['error' => 'cant remove person']);
+            return $this->json(['error' => 'Cannot remove person']);
         }
 
         try {
             $this->productRepository->delete($product);
         } catch (OptimisticLockException | ORMException $e) {
-            $this->addFlash('error','Cant Remove Product');
+            $this->addFlash('error','Something went wrong');
 
             return $this->redirectToRoute('get_products_list');
         }
 
-        $this->addFlash('success', 'Product Deleted Successfully');
+        $this->addFlash('success', 'Product deleted successfully');
 
         return $this->redirectToRoute('get_products_list');
 

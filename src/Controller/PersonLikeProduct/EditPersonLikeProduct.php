@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace App\Controller\PersonLikeProduct;
 
-use App\Entity\Person;
 use App\Entity\PersonLikeProduct;
-use App\Entity\Product;
 use App\Helper\Filter\PersonLikeProduct\PersonLikeProductHelper;
 use App\Repository\PersonLikeProductRepository;
 use App\Repository\PersonRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * Class AddPersonLikeProduct
+ * Class EditPersonLikeProduct
  * @package App\Controller\PersonLikeProduct
- * @Route("/personLikeProduct/add", name="add_person_like_product")
+ * @Route("/person/{person}/product/{product}/like/edit", name="edit_personlikeproduct")
  */
-class AddPersonLikeProduct extends AbstractController
+class EditPersonLikeProduct extends AbstractController
 {
     /**
      * @var PersonLikeProductRepository
@@ -31,14 +29,14 @@ class AddPersonLikeProduct extends AbstractController
     private PersonLikeProductRepository $personLikeProductRepository;
 
     /**
-     * @var PersonRepository
-     */
-    private PersonRepository $personRepository;
-
-    /**
      * @var ProductRepository
      */
     private ProductRepository $productRepository;
+
+    /**
+     * @var PersonRepository
+     */
+    private PersonRepository $personRepository;
 
     /**
      * @var PersonLikeProductHelper
@@ -46,30 +44,40 @@ class AddPersonLikeProduct extends AbstractController
     private PersonLikeProductHelper $personLikeProductHelper;
 
     /**
-     * AddPersonLikeProduct constructor.
      * @param PersonLikeProductRepository $personLikeProductRepository
-     * @param PersonRepository $personRepository
      * @param ProductRepository $productRepository
+     * @param PersonRepository $personRepository
      * @param PersonLikeProductHelper $personLikeProductHelper
      */
     public function __construct(
         PersonLikeProductRepository $personLikeProductRepository,
-        PersonRepository $personRepository,
         ProductRepository $productRepository,
+        PersonRepository $personRepository,
         PersonLikeProductHelper $personLikeProductHelper
-    ) {
+    )
+    {
         $this->personLikeProductRepository = $personLikeProductRepository;
-        $this->personRepository = $personRepository;
         $this->productRepository = $productRepository;
+        $this->personRepository = $personRepository;
         $this->personLikeProductHelper = $personLikeProductHelper;
     }
 
     /**
      * @param Request $request
+     * @param int $product
+     * @param int $person
      * @return Response
      */
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, int $product, int $person): Response
     {
+        $persons = $this->personRepository->findAll();
+        $products = $this->productRepository->findAll();
+
+        $personLikeProduct = $this->personLikeProductRepository->findOneBy([
+            'person' => $person,
+            'product' => $product
+        ]);
+
 
         if ($request->isMethod('POST')) {
 
@@ -80,38 +88,42 @@ class AddPersonLikeProduct extends AbstractController
 
             $exist = $this->personLikeProductHelper->isPersonLikeProductExist($person, $product);
 
-            if (!$person || !$product || $exist) {
-                $this->addFlash('error', 'Cant add like, make sure like doesnt exist');
+            if ( !$person || !$product || $exist) {
+                $this->addFlash('error', 'Cant edit like, make sure like already not exist');
 
-                return $this->redirectToRoute('add_person_like_product');
+                return $this->redirectToRoute('get_personLikeProduct_list');
             }
 
-            $personLikeProduct = new PersonLikeProduct();
-            $personLikeProduct->setProduct($product);
             $personLikeProduct->setPerson($person);
+            $personLikeProduct->setProduct($product);
 
             try {
-                $this->personLikeProductRepository->save($personLikeProduct);
+                $this->personLikeProductRepository->update();
             } catch (OptimisticLockException | ORMException $e) {
                 $this->addFlash('error', 'Something went wrong');
-
-                return $this->redirectToRoute('add_person_like_product');
+                return $this->redirectToRoute('edit_personlikeproduct');
             }
 
-            $this->addFlash('success', 'Like Add Successfully');
+            $this->addFlash('success', 'Like edited Successfully');
+            return $this->redirectToRoute('get_personLikeProduct_list');
 
-            return $this->redirectToRoute('add_person_like_product');
         }
 
-        $persons = $this->personRepository->findAll();
-        $products = $this->productRepository->findAll();
+
+        $exist = $this->personLikeProductHelper->isPersonLikeProductExist($person, $product);
+
+        if ( !$exist) {
+            $this->addFlash('error', 'Cant edit like, make sure like exist');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
+        }
 
         return $this->render(
-            'like/new.html.twig',
+            '/like/edit.html.twig',
             [
+                'like' => $personLikeProduct,
                 'persons' => $persons,
                 'products' => $products
-            ]
-        );
+            ]);
     }
 }
