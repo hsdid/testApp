@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class GetPersonLikeProductList
  * @package App\Controller\PersonLikeProduct
- * @Route("/person", name="get_personLikeProduct_list", methods={"GET"})
+ * @Route("/personLikeProduct", name="get_personLikeProduct_list", methods={"GET"})
  */
 class GetPersonLikeProductList extends AbstractController
 {
@@ -30,13 +30,18 @@ class GetPersonLikeProductList extends AbstractController
         $this->personLikeProductRepository = $personLikeProductRepository;
     }
 
-    public function __invoke()
+    /**
+     * @return Response
+     */
+    public function __invoke(): Response
     {
         $likes = $this->personLikeProductRepository->findAll();
 
-        return $this->json([
-            'likes' => $likes,
-            'qty' => count($likes)
-        ]);
+        return $this->render(
+            '/like/index.html.twig',
+            [
+                'likes' => $likes,
+                'qty' => count($likes)
+            ]);
     }
 }

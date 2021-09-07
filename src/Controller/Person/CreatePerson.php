@@ -51,7 +51,7 @@ class CreatePerson extends AbstractController
      */
     public function __invoke(Request $request): Response
     {
-        $data = json_decode($request->getContent(),true);
+        $data = $request->request->all();
 
         $person = new Person();
 
@@ -62,21 +62,22 @@ class CreatePerson extends AbstractController
 
             try {
                 $this->personRepository->save($person);
+
             } catch (OptimisticLockException | ORMException $e) {
-                return $this->json(['error' => 'something went wrong']);
+
+                $this->addFlash('error', 'Something went wrong');
+                return $this->redirectToRoute('get_persons_list');
             }
 
-            return $this->json([
-                'person' => $person->getLogin(),
-                'message' => 'Success',
-            ]);
+            $this->addFlash('success', 'Person created successfully');
+
+            return $this->redirectToRoute('get_persons_list');
         }
 
         $error = $this->formErrors->getErrors($form);
 
-        return $this->json([
-            'error' => $error,
-            'path' => 'src/Controller/PersonController.php',
-        ]);
+        $this->addFlash('error', $error);
+
+        return $this->redirectToRoute('get_persons_list');
     }
 }

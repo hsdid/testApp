@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\PersonLikeProduct;
 
-use App\Entity\Person;
-use App\Entity\Product;
+use App\Helper\Filter\PersonLikeProduct\PersonLikeProductHelper;
 use App\Repository\PersonLikeProductRepository;
 use App\Repository\PersonRepository;
 use App\Repository\ProductRepository;
@@ -37,32 +36,46 @@ class DeletePersonLikeProduct extends AbstractController
      */
     private ProductRepository $productRepository;
 
+    /**
+     * @var PersonLikeProductHelper
+     */
+    private PersonLikeProductHelper $personLikeProductHelper;
+
+    /**
+     * DeletePersonLikeProduct constructor.
+     * @param PersonLikeProductRepository $personLikeProductRepository
+     * @param PersonRepository $personRepository
+     * @param ProductRepository $productRepository
+     * @param PersonLikeProductHelper $personLikeProductHelper
+     */
     public function __construct(
         PersonLikeProductRepository $personLikeProductRepository,
         PersonRepository $personRepository,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        PersonLikeProductHelper $personLikeProductHelper
     ) {
         $this->personLikeProductRepository = $personLikeProductRepository;
         $this->personRepository = $personRepository;
         $this->productRepository = $productRepository;
+        $this->personLikeProductHelper = $personLikeProductHelper;
     }
 
-    public function __invoke(int $personId, int $productId)
+    /**
+     * @param int $personId
+     * @param int $productId
+     * @return Response
+     */
+    public function __invoke(int $personId, int $productId): Response
     {
         $person = $this->personRepository->find($personId);
-
-        if (!$person) {
-            return $this->json([
-                'error' => 'person dosent exist'
-            ]);
-        }
-
         $product = $this->productRepository->find($productId);
 
-        if (!$product) {
-            return $this->json([
-                'error' => 'product dosent exist'
-            ]);
+        $exist = $this->personLikeProductHelper->isPersonLikeProductExist($person, $product);
+
+        if (!$person || !$product || !$exist) {
+            $this->addFlash('error', 'Cant remove like, make sure like doesnt exist');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
         }
 
         $likeProduct = $this->personLikeProductRepository->findOneBy([
@@ -70,23 +83,17 @@ class DeletePersonLikeProduct extends AbstractController
             'product' => $product
         ]);
 
-        if (!$likeProduct) {
-            return $this->json([
-                'error' => 'Like dosent exist'
-            ]);
-        }
-
         try {
             $this->personLikeProductRepository->delete($likeProduct);
         } catch (OptimisticLockException | ORMException $e) {
-            return $this->json([
-                'error' => 'something went wrong'
-            ]);
+
+            $this->addFlash('error', 'Like cannot be deleted');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
         }
 
-        return $this->json([
-            'person' => $person,
-            'success' => 'deleted succesfully'
-        ]);
+        $this->addFlash('success', 'Like deleted successfully');
+
+        return $this->redirectToRoute('get_personLikeProduct_list');
     }
 }

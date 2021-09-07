@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class EditPerson
  * @package App\Controller\Person
- * @Route("/person/{id}/edit", name="edit_person", methods={"POST"})
+ * @Route("/person/{id}/edit", name="edit_person")
  */
 class EditPerson extends AbstractController
 {
@@ -39,7 +39,8 @@ class EditPerson extends AbstractController
     public function __construct(
         PersonRepository $personRepository,
         FormErrors $formErrors
-    ) {
+    )
+    {
         $this->personRepository = $personRepository;
         $this->formErrors = $formErrors;
     }
@@ -47,39 +48,50 @@ class EditPerson extends AbstractController
     /**
      * @param Request $request
      * @param int $id
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return Response
      */
-    public function __invoke(Request $request, int $id)
+    public function __invoke(Request $request, int $id): Response
     {
         $person = $this->personRepository->find($id);
 
         if (!$person) {
-            return $this->json(['error' => 'cant updated person']);
+            $this->addFlash('error', 'The person cannot be found');
+            return $this->redirectToRoute('get_persons_list');
         }
 
-        $data = json_decode($request->getContent(),true);
+        if ($request->isMethod('POST')) {
 
-        $form = $this->createForm(PersonType::class, $person);
-        $form->submit($data);
+            $data = $request->request->all();
 
-        if ($form->isValid()) {
-            try {
-                $this->personRepository->update();
-            } catch (OptimisticLockException | ORMException $e) {
-                return $this->json(['error' => 'cant updated person']);
+            $form = $this->createForm(PersonType::class, $person);
+            $form->submit($data);
+
+            if ($form->isValid()) {
+                try {
+                    $this->personRepository->update();
+
+                } catch (OptimisticLockException | ORMException $e) {
+                    $this->addFlash('error', 'Something went wrong');
+
+                    return $this->redirectToRoute('edit_person');
+                }
+
+                $this->addFlash('success', 'Person edited successfully');
+
+                return $this->redirectToRoute('get_persons_list');
             }
 
-            return $this->json([
-                'person' => $person,
-                'message' => 'Success updated',
-            ]);
+            $error = $this->formErrors->getErrors($form);
+            $this->addFlash('error', $error);
+
+            return $this->redirectToRoute('edit_person');
         }
 
-        $error = $this->formErrors->getErrors($form);
+        return $this->render(
+            '/person/edit.html.twig',
+            [
+                'person' => $person
+            ]);
 
-        return $this->json([
-            'error' => $error,
-            'path' => 'src/Controller/PersonController.php',
-        ]);
     }
 }

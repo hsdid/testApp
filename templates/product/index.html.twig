@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Product Model
+{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form action="/product" method="post">
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">info</label>
+            <input type="text" class="form-control" id="info" name="info" required>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Public date</label>
+            <input type="date" class="form-control" id="publicDate" name="publicDate" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <hr>
+    <select class="custom-select custom-select-sm mt-4 mb-4" onchange="location = this.value;">
+        <option selected>Products filter</option>
+        <option value="/product/?sort=likes">Most liked</option>
+        <option value="/product/?sort=least-likes">least liked</option>
+        <option value="/product">latest</option>
+        <option value="/product/?sort=oldest">oldest</option>
+    </select>
+    <h2>Products</h2>
+    {% if products %}
+        <table class="table" id="products">
+            <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">name</th>
+                    <th scope="col">info</th>
+                    <th scope="col">public time</th>
+                    <th scope="col">likes</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                <tr>
+                    <td scope="row">{{ product.id }} </td>
+                    <td>{{ product.name }} </td>
+                    <td>{{ product.info }} </td>
+                    <td>{{ product.publicDate|date("Y/m/d") }} </td>
+                    {% if product.likes %}
+                        <td>{{ product.likes }} </td>
+                    {% else %}
+                        <td>0</td>
+                    {% endif %}
+                    <td>
+                        <a href="/product/{{ product.id }}/edit" class="btn btn-light">Edit</a>
+                        <a href="/product/{{ product.id }}/delete" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No articles to display</p>
+    {% endif %}
+
+{% endblock body %}
+
+{% block javascripts %}
+{% endblock %}

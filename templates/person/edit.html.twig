@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Product Model
+{% endblock %}
+
+{% block body %}
+    {% if msg is defined %}
+        <div class="alert alert-danger">
+            {{msg}}
+        </div>
+    {% endif %}
+
+    <form action="/person/{{ person.id }}/edit" method="post">
+        <div class="mb-3">
+            <label for="login" class="form-label">login</label>
+            <input type="text" class="form-control" id="login" name="login" required value="{{ person.login }}">
+        </div>
+        <div class="mb-3">
+            <label for="last name" class="form-label">last name</label>
+            <input type="text" class="form-control" id="lName" name="lName" required value="{{ person.lName }}">
+        </div>
+        <div class="mb-3">
+            <label for="first name" class="form-label">first name</label>
+            <input type="text" class="form-control" id="fName" name="fName" required value="{{ person.fName }}">
+        </div>
+        <div class="mb-3">
+            <label for="state" class="form-label">state</label>
+            <select class="form-select" id="state" name="state">
+                <option selected>Choose state</option>
+                <option value=1>Active</option>
+                <option value=2>Banned</option>
+                <option value=3>Removed</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+{% endblock body %}
+
+{% block javascripts %}
+
+{% endblock %}

@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
-use App\Entity\Person;
 use App\Entity\PersonLikeProduct;
-use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -35,6 +35,15 @@ class PersonLikeProductRepository extends ServiceEntityRepository
     }
 
     /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function update()
+    {
+        $this->_em->flush();
+    }
+
+    /**
      * @param PersonLikeProduct $personLikeProduct
      * @throws ORMException
      * @throws OptimisticLockException
@@ -44,33 +53,4 @@ class PersonLikeProductRepository extends ServiceEntityRepository
         $this->_em->remove($personLikeProduct);
         $this->_em->flush();
     }
-
-    // /**
-    //  * @return PersonLikeProduct[] Returns an array of PersonLikeProduct objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?PersonLikeProduct
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

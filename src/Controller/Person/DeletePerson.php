@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Person;
 
+use App\Entity\Person;
 use App\Repository\PersonRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -40,18 +41,17 @@ class DeletePerson extends AbstractController
         $person = $this->personRepository->find($id);
 
         if (!$person) {
-            return $this->json(['error' => 'cant remove person']);
+            return $this->redirectToRoute('get_persons_list');
         }
 
         try {
-            $this->personRepository->delete($person);
+            $person->setState(Person::STATE_REMOVED);
+            $this->personRepository->update();
+
         } catch (OptimisticLockException | ORMException $e) {
-            return $this->json(['error' => 'cant remove person']);
+            return $this->redirectToRoute('get_persons_list');
         }
 
-        return $this->json([
-            'person' => $person,
-            'success' => 'deleted succesfully'
-        ]);
+        return $this->redirectToRoute('get_persons_list');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Person;
@@ -7,7 +9,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
-use const Grpc\STATUS_ABORTED;
 
 /**
  * @method Person|null find($id, $lockMode = null, $lockVersion = null)
@@ -35,17 +36,6 @@ class PersonRepository extends ServiceEntityRepository
 
 
     /**
-     * @param Person $person
-     * @throws OptimisticLockException
-     * @throws ORMException
-     */
-    public function delete(Person $person)
-    {
-        $person->setState(Person::STATE_REMOVED);
-        $this->_em->flush();
-    }
-
-    /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -54,33 +44,27 @@ class PersonRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-
-    // /**
-    //  * @return Person[] Returns an array of Person objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param string $order
+     * @return int|mixed|string
+     */
+    public function sortByLikes(string $order)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return  $this->createQueryBuilder('p')
+            ->select('p.id, p.login, p.lName, p.fName, p.state , count(l.product) as likes')
+            ->leftJoin('p.likedProducts', 'l')
+            ->groupBy('p.id')
+            ->orderBy('likes', $order)->getQuery()->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Person
+    public function findByState(int $state)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return  $this->createQueryBuilder('p')
+            ->select('p.id, p.login, p.lName, p.fName, p.state , count(l.product) as likes')
+            ->leftJoin('p.likedProducts', 'l')
+            ->where('p.state = :state')
+            ->setParameter('state', $state)
+            ->groupBy('p.id')
+            ->orderBy('likes', 'desc')->getQuery()->getResult();
     }
-    */
 }

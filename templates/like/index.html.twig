@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Product Model
+{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <a class="btn btn-primary" href="/personLikeProduct/add">Add Like</a>
+    <h2>likes</h2>
+    {% if likes %}
+        <table class="table" id="products">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">person login</th>
+                <th scope="col">product name</th>
+            </tr>
+            </thead>
+            <tbody >
+            {% for like in likes %}
+                <tr>
+                    <td>{{ like.getPerson.login }} </td>
+                    <td>{{ like.getProduct.name }} </td>
+                    <td>
+                        <a href="/person/{{ like.getPerson.id }}/product/{{ like.getProduct.id }}/like/edit" class="btn btn-light">Edit</a>
+                        <a href="/person/{{ like.getPerson.id }}/product/{{ like.getProduct.id }}/like/delete" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No likes to display</p>
+    {% endif %}
+
+{% endblock body %}
+
+{% block javascripts %}
+{% endblock %}

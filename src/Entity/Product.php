@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,10 +35,9 @@ class Product
     /**
      * @ORM\Column(name="public_date", type="date")
      */
-    private \DateTimeInterface $publicDate;
+    private $publicDate;
 
     /**
-     * all users that like product
      * @ORM\OneToMany(targetEntity="App\Entity\PersonLikeProduct", mappedBy="product")
      */
     private $likedProducts;
@@ -94,18 +94,18 @@ class Product
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getPublicDate(): ?\DateTimeInterface
+    public function getPublicDate(): ?DateTimeInterface
     {
         return $this->publicDate;
     }
 
     /**
-     * @param \DateTimeInterface $publicDate
+     * @param DateTimeInterface $publicDate
      * @return $this
      */
-    public function setPublicDate(\DateTimeInterface $publicDate): self
+    public function setPublicDate(DateTimeInterface $publicDate): self
     {
         $this->publicDate = $publicDate;
 
