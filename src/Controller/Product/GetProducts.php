@@ -31,13 +31,19 @@ class GetProducts extends AbstractController
         $this->productRepository = $productRepository;
     }
 
-    public function __invoke()
+    /**
+     * @return Response
+     */
+    public function __invoke(): Response
     {
         $products = $this->productRepository->findAll();
 
-        return $this->json([
-            'products' => $products,
-            'qty' => count($products)
-        ]);
+        return $this->render(
+            '/product/index.html.twig',
+            [
+                'msg' => '',
+                'products' => $products,
+                'qty' => count($products)
+            ]);
     }
 }

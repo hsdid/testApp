@@ -34,7 +34,7 @@ class Product
     /**
      * @ORM\Column(name="public_date", type="date")
      */
-    private \DateTimeInterface $publicDate;
+    private $publicDate;
 
     /**
      * all users that like product

@@ -46,13 +46,14 @@ class DeleteProduct extends AbstractController
         try {
             $this->productRepository->delete($product);
         } catch (OptimisticLockException | ORMException $e) {
-            return $this->json(['error' => 'cant remove person']);
+            $this->addFlash('error','Cant Remove Product');
+
+            return $this->redirectToRoute('get_products_list');
         }
 
-        return $this->json([
-            'product' => $product,
-            'success' => 'deleted succesfully'
-        ]);
+        $this->addFlash('success', 'Product Deleted Successfully');
+
+        return $this->redirectToRoute('get_products_list');
 
     }
 }

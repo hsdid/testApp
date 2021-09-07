@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class AddPersonLikeProduct
  * @package App\Controller\PersonLikeProduct
- * @Route("/personLikeProduct", name="add_person_like_product", methods={"POST"})
+ * @Route("/personLikeProduct/add", name="add_person_like_product")
  */
 class AddPersonLikeProduct extends AbstractController
 {
@@ -55,36 +55,66 @@ class AddPersonLikeProduct extends AbstractController
         $this->productRepository = $productRepository;
     }
 
-
-    public function __invoke(Request $request)
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function __invoke(Request $request): Response
     {
-        $data = json_decode($request->getContent(),true);
 
-        $person = $this->personRepository->find($data['person']);
-        $product = $this->productRepository->find($data['product']);
+        if ($request->isMethod('POST')) {
 
-        if (!$person || !$product) {
-            return $this->json([
-                'error' => 'cant like product'
+            $data = json_decode($request->getContent(),true);
+
+            $person = $this->personRepository->find($data['person']);
+            $product = $this->productRepository->find($data['product']);
+
+            if (!$person || !$product) {
+                $this->addFlash('error', 'Cant like');
+
+                return $this->redirectToRoute('add_person_like_product');
+            }
+
+            $personLikeProductExist = $this->personLikeProductRepository->findOneBy([
+                'person' => $person,
+                'product' => $product
             ]);
+
+            if ($personLikeProductExist) {
+                var_dump('aa');
+                die();
+                $this->addFlash('error', 'Like exist');
+
+                return $this->redirectToRoute('add_person_like_product');
+            }
+
+            $personLikeProduct = new PersonLikeProduct();
+            $personLikeProduct->setProduct($product);
+            $personLikeProduct->setPerson($person);
+
+            try {
+                $this->personLikeProductRepository->save($personLikeProduct);
+            } catch (OptimisticLockException | ORMException $e) {
+                $this->addFlash('error', 'Cant like');
+
+                return $this->redirectToRoute('add_person_like_product');
+            }
+
+            $this->addFlash('success', 'Like Add Successfully');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
         }
 
-        $personLikeProduct = new PersonLikeProduct();
-        $personLikeProduct->setProduct($product);
-        $personLikeProduct->setPerson($person);
+        $persons = $this->personRepository->findAll();
 
-        try {
-            $this->personLikeProductRepository->save($personLikeProduct);
-        } catch (OptimisticLockException | ORMException $e) {
-            return $this->json([
-                'error' => 'cant like product',
-            ]);
-        }
+        $products = $this->productRepository->findAll();
 
-        return $this->json([
-            'message' => 'Success',
-            'like' => $personLikeProduct
-        ]);
+        return $this->render(
+            'like/new.html.twig',
+            [
+                'persons' => $persons,
+                'products' => $products
+            ]
+        );
     }
-
 }

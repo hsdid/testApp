@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductController!{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    <h2>likes</h2>
+    <a id="add-like" class="btn btn-primary"> Like </a>
+    <div class="row align-items-start">
+        <div class="col">
+
+            {% if persons %}
+                <input id="personsSearch" type="text" placeholder="Search persons">
+                <table class="table" id="products">
+                    <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">person login</th>
+                    </tr>
+                    </thead>
+                    <tbody id="person-table">
+                    {% for person in persons %}
+                        <tr>
+                            <td>{{ person.id }} </td>
+                            <td id="person-login">{{ person.login }} </td>
+                            <td>
+                                <a href="#" class="btn btn-primary choose-person" person-id="{{person.id}}">choose</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No persons to display </p>
+            {% endif %}
+        </div>
+        <div class="col">
+            {% if products %}
+                <input id="productsSearch" type="text" placeholder="Search products">
+                <table class="table" id="products">
+                    <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">person login</th>
+                        <th scope="col">product name</th>
+                    </tr>
+                    </thead>
+                    <tbody id="product-table">
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product.id }} </td>
+                            <td id="product-name">{{ product.name }} </td>
+                            <td>
+                                <a href="#" class="btn btn-primary choose-product" product-id="{{product.id}}">choose</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No products to display</p>
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/like.js"> </script>
+{% endblock %}

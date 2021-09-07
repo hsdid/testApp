@@ -54,33 +54,17 @@ class PersonRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-
-    // /**
-    //  * @return Person[] Returns an array of Person objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param string $order
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function sortByLikes(string $order): \Doctrine\ORM\QueryBuilder
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+            ->select('p, count(*) as likes')
+            ->leftJoin('person_like_product', 'l', 'ON', 'p.id = l.person_id')
+            ->groupBy('p.login')
+            ->orderBy('likes');
 
-    /*
-    public function findOneBySomeField($value): ?Person
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
     }
-    */
 }

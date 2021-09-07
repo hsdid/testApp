@@ -31,13 +31,19 @@ class GetPersons extends AbstractController
         $this->personRepository = $personRepository;
     }
 
-    public function __invoke(): \Symfony\Component\HttpFoundation\JsonResponse
+    /**
+     * @return Response
+     */
+    public function __invoke(): Response
     {
         $persons = $this->personRepository->findAll();
 
-        return $this->json([
-            'persons' => $persons,
-            'qty' => count($persons)
-        ]);
+        return $this->render(
+            '/person/index.html.twig',
+            [
+                'msg' => '',
+                'persons' => $persons,
+                'qty' => count($persons)
+            ]);
     }
 }

@@ -8,6 +8,9 @@ use App\Entity\Product;
 use App\Form\FormErrors;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,32 +50,37 @@ class CreateProduct extends AbstractController
     /**
      * @param Request $request
      * @return Response
+     * @throws Exception
      */
     public function __invoke(Request $request): Response
     {
-        $data = json_decode($request->getContent(),true);
+        $data = $request->request->all();
+        $data['publicDate'] = new \DateTime($data['publicDate']);
 
         $product = new Product();
-        $product->setPublicDate(new \DateTime());
 
         $form = $this->createForm(ProductType::class, $product);
         $form->submit($data);
 
         if ($form->isValid()) {
 
-            $this->productRepository->save($product);
+            try {
+                $this->productRepository->save($product);
+            } catch (OptimisticLockException | ORMException $e) {
+                $this->addFlash('error', 'Cant Create product');
 
-            return $this->json([
-                'product' => $product->getName(),
-                'message' => 'Product created succesfully',
-            ]);
+                return $this->redirectToRoute('get_products_list');
+            }
+
+            $this->addFlash('success', 'Product Created Successfully');
+
+            return $this->redirectToRoute('get_products_list');
         }
 
         $errors = $this->formErrors->getErrors($form);
 
-        return $this->json([
-            'errors' => $errors,
-            'message' => 'cant add product',
-        ]);
+        $this->addFlash('error', $errors);
+
+        return $this->redirectToRoute('get_products_list');
     }
 }

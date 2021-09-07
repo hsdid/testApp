@@ -52,17 +52,17 @@ class DeletePersonLikeProduct extends AbstractController
         $person = $this->personRepository->find($personId);
 
         if (!$person) {
-            return $this->json([
-                'error' => 'person dosent exist'
-            ]);
+            $this->addFlash('error', 'Like cannot be deleted');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
         }
 
         $product = $this->productRepository->find($productId);
 
         if (!$product) {
-            return $this->json([
-                'error' => 'product dosent exist'
-            ]);
+            $this->addFlash('error', 'Like cannot be deleted');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
         }
 
         $likeProduct = $this->personLikeProductRepository->findOneBy([
@@ -71,22 +71,23 @@ class DeletePersonLikeProduct extends AbstractController
         ]);
 
         if (!$likeProduct) {
-            return $this->json([
-                'error' => 'Like dosent exist'
-            ]);
+
+            $this->addFlash('error', 'Like cannot be deleted');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
         }
 
         try {
             $this->personLikeProductRepository->delete($likeProduct);
         } catch (OptimisticLockException | ORMException $e) {
-            return $this->json([
-                'error' => 'something went wrong'
-            ]);
+
+            $this->addFlash('error', 'Like cannot be deleted');
+
+            return $this->redirectToRoute('get_personLikeProduct_list');
         }
 
-        return $this->json([
-            'person' => $person,
-            'success' => 'deleted succesfully'
-        ]);
+        $this->addFlash('success', 'Like deleted successfully');
+
+        return $this->redirectToRoute('get_personLikeProduct_list');
     }
 }

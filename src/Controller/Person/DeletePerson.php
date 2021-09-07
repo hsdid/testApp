@@ -39,19 +39,21 @@ class DeletePerson extends AbstractController
     {
         $person = $this->personRepository->find($id);
 
+
         if (!$person) {
-            return $this->json(['error' => 'cant remove person']);
+            return $this->redirectToRoute('get_persons_list');
         }
+
+
 
         try {
             $this->personRepository->delete($person);
         } catch (OptimisticLockException | ORMException $e) {
-            return $this->json(['error' => 'cant remove person']);
+            var_dump($person->getId());
+            die();
+            return $this->redirectToRoute('get_persons_list');
         }
 
-        return $this->json([
-            'person' => $person,
-            'success' => 'deleted succesfully'
-        ]);
+        return $this->redirectToRoute('get_persons_list');
     }
 }

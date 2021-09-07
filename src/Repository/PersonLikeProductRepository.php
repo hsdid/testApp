@@ -44,33 +44,4 @@ class PersonLikeProductRepository extends ServiceEntityRepository
         $this->_em->remove($personLikeProduct);
         $this->_em->flush();
     }
-
-    // /**
-    //  * @return PersonLikeProduct[] Returns an array of PersonLikeProduct objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?PersonLikeProduct
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
