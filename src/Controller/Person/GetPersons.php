@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class GetPersons
  * @package App\Controller\Person
- * @Route("/person/{filter}", name="get_persons_list", methods={"GET"})
+ * @Route("/person", name="get_persons_list", methods={"GET"})
  */
 class GetPersons extends AbstractController
 {
