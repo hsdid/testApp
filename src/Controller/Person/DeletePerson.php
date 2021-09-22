@@ -40,15 +40,19 @@ class DeletePerson extends AbstractController
     {
         $person = $this->personRepository->find($id);
 
-        if (!$person) {
+        if (!$person || $person->getState() == Person::STATE_REMOVED) {
+            $this->addFlash('error', 'The person cannot be found or is already removed');
             return $this->redirectToRoute('get_persons_list');
         }
 
         try {
             $person->setState(Person::STATE_REMOVED);
             $this->personRepository->update();
+            $this->addFlash('success', 'Person deleted successfully');
 
         } catch (OptimisticLockException | ORMException $e) {
+            $this->addFlash('error', 'Something went wrong');
+
             return $this->redirectToRoute('get_persons_list');
         }
 

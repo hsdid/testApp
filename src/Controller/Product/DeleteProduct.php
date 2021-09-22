@@ -41,7 +41,8 @@ class DeleteProduct extends AbstractController
         $product = $this->productRepository->find($id);
 
         if (!$product) {
-            return $this->json(['error' => 'Cannot remove person']);
+            $this->addFlash('error','Cannot remove product');
+            return $this->redirectToRoute('get_products_list');
         }
 
         try {

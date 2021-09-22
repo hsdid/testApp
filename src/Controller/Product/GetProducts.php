@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Product;
 
-use App\Helper\Filter\Product\ProductFilter;
+use App\Helper\Product\ProductFilter;
+use App\Helper\Product\ProductHelper;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,17 +20,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class GetProducts extends AbstractController
 {
     /**
-     * @var ProductFilter
+     * @var ProductHelper
      */
-    private ProductFilter $productFilter;
+    private ProductHelper $productHelper;
 
     /**
      * GetProducts constructor.
-     * @param ProductFilter $productFilter
+     * @param ProductHelper $productHelper
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(ProductHelper $productHelper)
     {
-        $this->productFilter = $productFilter;
+        $this->productHelper = $productHelper;
     }
 
     /**
@@ -40,7 +41,7 @@ class GetProducts extends AbstractController
     {
         $sort  = $request->query->get('sort');
 
-        $products = $this->productFilter->getProducts($sort);
+        $products = $this->productHelper->getProducts($sort);
 
         return $this->render(
             '/product/index.html.twig',

@@ -11,6 +11,12 @@
         </div>
     {% endfor %}
 
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     <form action="/product" method="post">
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">name</label>
@@ -34,6 +40,8 @@
         <option value="/product/?sort=least-likes">least liked</option>
         <option value="/product">latest</option>
         <option value="/product/?sort=oldest">oldest</option>
+        <option value="/product/?sort=top-3">top-3</option>
+
     </select>
     <h2>Products</h2>
     {% if products %}

@@ -3,10 +3,6 @@
 {% block title %}Hello ProductController!{% endblock %}
 
 {% block body %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
     {% for message in app.flashes('success') %}
         <div class="alert alert-success">
             {{ message }}
@@ -54,7 +50,7 @@
                             <td>{{ person.id }} </td>
                             <td id="person-login">{{ person.login }} </td>
                             <td>
-                                <a href="#" class="btn btn-primary choose-person" person-id="{{person.id}}">choose</a>
+                                <a id="choose-person" href="#" class="btn btn-primary choose-person" person-id="{{person.id}}">choose</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -80,7 +76,7 @@
                             <td>{{ product.id }} </td>
                             <td id="product-name">{{ product.name }} </td>
                             <td>
-                                <a href="#" class="btn btn-primary choose-product" product-id="{{product.id}}">choose</a>
+                                <a id="choose-product" href="#" class="btn btn-primary choose-product" product-id="{{product.id}}">choose</a>
                             </td>
                         </tr>
                     {% endfor %}

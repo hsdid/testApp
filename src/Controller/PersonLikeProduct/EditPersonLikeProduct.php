@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\PersonLikeProduct;
 
 use App\Entity\PersonLikeProduct;
-use App\Helper\Filter\PersonLikeProduct\PersonLikeProductHelper;
+use App\Helper\PersonLikeProduct\PersonLikeProductHelper;
 use App\Repository\PersonLikeProductRepository;
 use App\Repository\PersonRepository;
 use App\Repository\ProductRepository;

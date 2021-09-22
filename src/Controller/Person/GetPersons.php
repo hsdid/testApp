@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Person;
 
-use App\Helper\Filter\Person\PersonFilter;
+use App\Helper\Person\PersonHelper;
 use App\Repository\PersonRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,26 +14,26 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class GetPersons
  * @package App\Controller\Person
- * @Route("/person/", name="get_persons_list", methods={"GET"})
+ * @Route("/person/{filter}", name="get_persons_list", methods={"GET"})
  */
 class GetPersons extends AbstractController
 {
 
     /**
-     * @var PersonFilter
+     * @var PersonHelper
      */
-    private PersonFilter $personFilter;
+    private PersonHelper $personHelper;
 
     /**
      * GetPersons constructor.
-     * @param PersonFilter $personFilter
+     * @param PersonHelper $personHelper
      */
     public function __construct(
 
-        PersonFilter $personFilter
+        PersonHelper $personHelper
     )
     {
-        $this->personFilter = $personFilter;
+        $this->personHelper = $personHelper;
     }
 
     /**
@@ -44,7 +44,7 @@ class GetPersons extends AbstractController
     {
         $sort = $request->query->get('sort');
 
-        $persons = $this->personFilter->getPersons($sort);
+        $persons = $this->personHelper->getPersons($sort);
 
         return $this->render(
             '/person/index.html.twig',

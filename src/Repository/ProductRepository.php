@@ -78,4 +78,28 @@ class ProductRepository extends ServiceEntityRepository
             ->groupBy('p.id')
             ->orderBy('p.publicDate', $order)->getQuery()->getResult();
     }
+
+    public function serachProduct(string $data)
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id, p.name, p.info, p.publicDate')
+            ->where('p.name LIKE :name')
+            ->setParameter('name', "%$data%")
+            ->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $order
+     * @return int|mixed|string
+     */
+    public function getTopProducts(int $limit)
+    {
+        return  $this->createQueryBuilder('p')
+            ->select('p.id, p.name, p.info, p.publicDate, count(l.person) as likes')
+            ->leftJoin('p.likedProducts', 'l')
+            ->groupBy('p.id')
+            ->orderBy('likes', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
+    }
 }

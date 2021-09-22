@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Helper\Filter\PersonLikeProduct;
+namespace App\Helper\PersonLikeProduct;
 
 use App\Entity\Person;
 use App\Entity\Product;

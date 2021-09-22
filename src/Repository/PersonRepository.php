@@ -67,4 +67,13 @@ class PersonRepository extends ServiceEntityRepository
             ->groupBy('p.id')
             ->orderBy('likes', 'desc')->getQuery()->getResult();
     }
+
+    public function serachPerson(string $data)
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id, p.login, p.lName, p.fName, p.state')
+            ->where('p.login LIKE :login')
+            ->setParameter('login', "%$data%")
+            ->getQuery()->getResult();
+    }
 }

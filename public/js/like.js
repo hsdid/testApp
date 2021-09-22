@@ -18,10 +18,33 @@ const productIdInput = document.querySelector('[data-productId]');
 
 const searchPersonString = e => {
     const currentString = e.target.value;
-    let result = getPersons;
-    result = result.filter(getPerson => getPerson.children[1].innerHTML.includes(currentString));
+
+    $.ajax({
+        type: "GET",
+        url: "searchPerson",
+        data: {
+            searchPerson: currentString
+        },
+        success: function(res) {
+            showPersons(res.persons)
+        }
+    });
+}
+
+function showPersons(data) {
+    let tab = '';
+    for (let p of data) {
+        tab += `<tr> 
+                    <td>${p.id}</td>
+                    <td id="person-login">${p.login}</td>     
+                    <td>
+                        <a id="choose-person" href="#" class="btn btn-primary choose-person" person-id=${p.id}>choose</a>
+                    </td>    
+                </tr>`;
+    }
     personTable.innerHTML = '';
-    result.forEach(name => personTable.appendChild(name));
+    personTable.innerHTML = tab;
+
 }
 
 searchPersonsInput.addEventListener('input', searchPersonString);
@@ -29,10 +52,31 @@ searchPersonsInput.addEventListener('input', searchPersonString);
 
 const searchProductString = e => {
     const currentString = e.target.value;
-    let result = getProducts;
-    result = result.filter(getProduct => getProduct.children[1].innerHTML.includes(currentString));
+    $.ajax({
+        type: "GET",
+        url: "searchProduct",
+        data: {
+            searchProduct: currentString
+        },
+        success: function(res) {
+            showProducts(res.products)
+        }
+    });
+}
+
+function showProducts(data) {
+    let tab = '';
+    for (let p of data) {
+        tab += `<tr> 
+                    <td>${p.id}</td>
+                    <td id="product-name">${p.name}</td>     
+                    <td>
+                        <a id="choose-product" href="#" class="btn btn-primary choose-product" product-id=${p.id}>choose</a>
+                    </td> 
+                </tr>`;
+    }
     productTable.innerHTML = '';
-    result.forEach(name => productTable.appendChild(name));
+    productTable.innerHTML = tab;
 }
 
 searchPoductsInput.addEventListener('input', searchProductString);
@@ -43,37 +87,40 @@ let person_id = null;
 let oldPerson = null;
 let oldProduct = null;
 
-products.map(product => product.addEventListener('click', e => {
-    if (oldProduct) {
-        oldProduct.classList.remove('bg-success');
-    }
-    product_id = e.target.getAttribute('product-id');
+let person;
 
-    let newProduct = product.parentElement.parentElement;
-    newProduct.classList.add('bg-success');
-    oldProduct  = newProduct;
+document.addEventListener('click', (e)=> {
+    if (e.target && e.target.id === "choose-person") {
+        if (oldPerson) {
+            oldPerson.classList.remove('bg-success');
+        }
+        let newPerson = e.target.parentElement.parentElement;
+        newPerson.classList.add('bg-success');
 
-    const productName = newProduct.children[1].innerHTML;
+        person_id = e.target.getAttribute('person-id');
 
-    productNameInput.setAttribute('value', productName);
-    productIdInput.setAttribute('value', product_id);
+        oldPerson  = newPerson;
 
-}));
+        const personLogin = newPerson.children[1].innerHTML;
 
-persons.map(person => person.addEventListener('click', e => {
-
-    if (oldPerson) {
-        oldPerson.classList.remove('bg-success');
+        personLoginInput.setAttribute('value', personLogin);
+        personIdInput.setAttribute('value', person_id);
     }
 
-    let newPerson = person.parentElement.parentElement;
-    newPerson.classList.add('bg-success');
-    person_id = e.target.getAttribute('person-id');
-    oldPerson  = newPerson;
+    if (e.target && e.target.id === "choose-product") {
+        if (oldProduct) {
+            oldProduct.classList.remove('bg-success');
+        }
 
-    const personLogin = newPerson.children[1].innerHTML;
+        product_id = e.target.getAttribute('product-id');
 
-    personLoginInput.setAttribute('value', personLogin);
-    personIdInput.setAttribute('value', person_id);
+        let newProduct = e.target.parentElement.parentElement;
+        newProduct.classList.add('bg-success');
+        oldProduct  = newProduct;
 
-}));
+        const productName = newProduct.children[1].innerHTML;
+
+        productNameInput.setAttribute('value', productName);
+        productIdInput.setAttribute('value', product_id);
+    }
+});

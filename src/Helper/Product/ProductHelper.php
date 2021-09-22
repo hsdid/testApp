@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Helper\Filter\Product;
+namespace App\Helper\Product;
 
 use App\Repository\ProductRepository;
 
-class ProductFilter
+class ProductHelper
 {
     /**
      * @var ProductRepository
@@ -36,6 +36,8 @@ class ProductFilter
             $products = $this->productRepository->sortByLikes('DESC');
         } else if ($sort == 'oldest') {
             $products = $this->productRepository->sortByDate('ASC');
+        } else if ($sort == 'top-3') {
+            $products = $this->productRepository->getTopProducts(3);
         }
 
         return $products;

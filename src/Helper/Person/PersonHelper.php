@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Helper\Filter\Person;
+namespace App\Helper\Person;
 
 use App\Entity\Person;
 use App\Repository\PersonRepository;
 
-class PersonFilter
+class PersonHelper
 {
     /**
      * @var PersonRepository
@@ -41,7 +41,29 @@ class PersonFilter
             $persons = $this->personRepository->findByState(Person::STATE_REMOVED);
         }
 
-        return $persons;
+        return $this->formatPersons($persons);
+    }
 
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function formatPersons(array $data): array
+    {
+        $formatedData = [];
+
+        foreach ($data as $person) {
+
+            if ($person['state'] == Person::STATE_ACTIVE)
+                $person['state'] = 'Active';
+            else if ($person['state'] == Person::STATE_BANNED)
+                $person['state'] = 'Banned';
+            else if ($person['state'] == Person::STATE_REMOVED)
+                $person['state'] = 'Removed';
+
+            $formatedData[] = $person;
+        }
+
+        return $formatedData;
     }
 }

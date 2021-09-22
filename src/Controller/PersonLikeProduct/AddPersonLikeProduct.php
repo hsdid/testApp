@@ -7,7 +7,7 @@ namespace App\Controller\PersonLikeProduct;
 use App\Entity\Person;
 use App\Entity\PersonLikeProduct;
 use App\Entity\Product;
-use App\Helper\Filter\PersonLikeProduct\PersonLikeProductHelper;
+use App\Helper\PersonLikeProduct\PersonLikeProductHelper;
 use App\Repository\PersonLikeProductRepository;
 use App\Repository\PersonRepository;
 use App\Repository\ProductRepository;
